@@ -43,11 +43,11 @@ class EmployeController extends AbstractController
 
         //////////// -------------- 2eme Partie : POST ------------ ////////////////
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             # Cette méthode pour récupérer les données des inputs est la premiéres méthode.
             # Nous utiliserons la seconde, grace au mécanisme d'auto hydratation de Symfony.
             // $form->get('salary')->getData();
-            
+
             $entityManager->persist($employe);
             $entityManager->flush();
 
@@ -66,23 +66,34 @@ class EmployeController extends AbstractController
     /*
     * @Route("/modifier-un-employe-{id}", name="employe_update", methods={"GET|POST"})
     */
-public function update(Employe $employe, Request $request, EntityManagerInterface $entityManager): Response
-{
-    $form = $this->createForm(EmployeFormType::class, $employe)
-        ->handleRequest($request);
+    public function update(Employe $employe, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(EmployeFormType::class, $employe)
+            ->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($employe);
             $entityManager->flush();
 
             return $this->redirectToRoute('default_home');
         } // end if()
 
-        return $this->render("form/employe.html.twig",[
+        return $this->render("form/employe.html.twig", [
             'employe' => $employe,
             'form_employe' => $form->createView()
         ]);
+    } # end fonction update
+
+    /**
+     * @Route("/supprimer-un-employe-{id}", name="employe_delete", methods={"GET"})
+     */
+    public function delete(Employe $employe, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $entityManager->remove($employe);
+        $entityManager->flush();
+
+        return $this->redirectToRoute("default_home");
+    } // end function delete()
+
+
 }
-
-
-} # end class
